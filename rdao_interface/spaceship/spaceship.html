@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f0f0f0;
+                margin: 0;
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .spaceship {
+                display:flex;
+                justify-content: center;
+                align-items: center;
+                margin: 50px 0;
+                position: relative;
+            }
+            .copilot, .commander {
+                flex: 1;
+                color: black;
+            }
+            .commander {
+                width: 40%;
+                /*height: 175px;*/
+                
+
+                justify-content: center;
+                align-items:center;
+                margin: 0 5px;
+                font-size: 18px;
+                font-weight: bold;
+                text-align: center;
+                /*background-image: url("spaceinvader.png");
+                background-size: 200px;*/
+            }
+            .copilot {
+                width:30%;
+                text-align: center;
+                margin: 0 10px;
+                font-size: 18px;
+                font-weight: bold;
+                /*background-image: url("spaceinvader.png");
+                background-size: 100px;*/
+            }
+            .proposals {
+                width: 60%;
+                background-color: white;
+                padding: 20px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+            }
+            .proposals h2 {
+                text-align: center;
+                color: #333;
+            }
+            .proposals ul {
+                list-style-type: none;
+                padding: 0;
+            }
+            .proposals ul li {
+                background-color: #f9f9f9;
+                margin: 10px 0;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+            }
+        </style>
+    </head>
+<body>
+<h1>rDAO</h1>
+<div id="forFFF"></div>
+<div id="spaceship-container" class="spaceship" >
+    <div class="copilot" id="copilot1">
+    </div>
+        
+    <div class="commander" id="commander">
+        
+    </div>
+    <div class="copilot" id="copilot2">
+    </div>
+</div>
+<div class="proposals">
+    <h2>Proposals advocate(d) for</h2>
+    <ul id="proposal_list">
+    </ul>
+</div>
+
+</body>
+<head>
+    <script src="./spaceship.js"></script>
+</head>
+</html>

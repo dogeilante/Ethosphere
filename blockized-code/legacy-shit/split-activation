@@ -1,0 +1,256 @@
+var forDoge = document.getElementById("forFFF");
+
+// workspace
+var container = document.createElement("div");
+container.id = "container";
+
+// Presentation
+var pageTitle = document.createElement("h1");
+pageTitle.textContent = "rDAO"
+container.appendChild(pageTitle).ATTRIBUTE_NODE
+
+// test comment
+
+
+
+function setTabListStyling(tablist) {
+}
+
+function createR_DAO_tabs() {
+    tablist = createTabList(container, ["Home", "add member"])
+    setActivationControls(tablist, "manual")
+    setTabListContent(tablist)
+    setTabListStyling(tablist)
+
+    tablist = createTabList(container, ["Home", "add member"])
+    setActivationControls(tablist, "auto")
+    setTabListContent(tablist)
+    setTabListStyling(tablist)
+}
+
+createR_DAO_tabs()
+
+
+
+
+
+
+forDoge.appendChild(container)
+
+
+
+
+
+
+
+
+
+
+
+
+
+//==========================Tabs==================
+/*------------------------------------------------ 
+-----------------------Universal for Tabs---------
+--------------------------------------------------
+*/
+function createTabList(divToAppend, tabItems) {
+    var tablist = document.createElement("div")
+    tablist.role = "tablist"
+    // Initialize tabs
+    for (tabName of tabItems) {
+        var tab = document.createElement("button")
+        tab.innerHTML = tabName;
+        tab.role = "tab"
+        tablist.appendChild(tab)
+    }
+    // Initialize Tabpanels
+    for (tab of tabItems) { 
+        var tabpanel = document.createElement("div")
+        tabpanel.role = "tabpanel"
+        tablist.appendChild(tabpanel)
+    }
+    divToAppend.appendChild(tablist)
+    return tablist
+}
+ 
+function setActivationControls(tablist, activationType) {
+    // setup for accessibility
+    // tabs[i].button.role = "tab"
+    var tabs = tablist.querySelectorAll("[role=tab]")
+    for (var i = 0; i < tabs.length; i++) {
+        var curr_tab = tabs[i];
+
+        curr_tab.tabIndex = -1;
+        curr_tab.setAttribute("aria-selected", "false");
+        // Add Accessibility Options
+        curr_tab.addEventListener("keydown", e => {onKeydownAuto(activationType, e)});
+        curr_tab.addEventListener("click", e => {onclick(e)});
+    }
+    setSelectedTab(tabs[0])
+}
+function setSelectedTab(currentTab) {
+    tablist = currentTab.parentElement;
+    var tabs = tablist.querySelectorAll("[role=tab]")
+    var tabpanels = tablist.querySelectorAll("[role=tabpanel]")
+    for (var i = 0; i < tabs.length; i++) {
+        tab = tabs[i];
+        if (currentTab === tab) {
+            tab.setAttribute("aria-selected", "true");
+            tab.removeAttribute("tabIndex");
+            tabpanels[i].classList.remove("is-hidden");
+        } else {
+            tab.setAttribute("aria-selected", "false");
+            tab.tabIndex = -1;
+            tabpanels[i].classList.add("is-hidden")
+        }
+    }
+}
+
+
+
+
+
+
+
+// NOTE: THE ONLY CHANGE between manual and automatic activation
+// relies in "MoveFocusToPreviousTab" calling focus, instead of setSelectedTab
+
+//-------------------------------------------------------------
+//-----------------Method 1: Manual Activation-----------------
+//-------------------------------------------------------------
+function onKeydown(e) {
+    var curr_tab = e.currentTarget
+    // get list of tabs, so we can move to bottom/top tab
+    var tablist = e.currentTarget.parentElement
+    var tabs = tablist.querySelectorAll("[role=tab]")
+    var flag = false;
+
+    switch (e.key) {
+      case "ArrowLeft":
+        moveFocusToPreviousTab(curr_tab);
+        flag = true;
+        break;
+
+      case "ArrowRight":
+        moveFocusToNextTab(curr_tab);
+        flag = true;
+        break;
+      case "Home":
+        moveFocusToTab(tabs[0]);
+        flag = true;
+        break;
+
+      case "End":
+        moveFocusToTab(tabs[tabs.length-1]);
+        flag = true;
+        break;
+
+      default:
+        break;
+    }
+
+    if (flag) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+}
+function onclick(e) {
+    // Pass targetTab and tablist element 
+    setSelectedTab(e.currentTarget)
+}
+
+//-------------------------Manage keyboard focus indicator-----------
+function moveFocusToTab(currentTab) {
+    currentTab.focus();
+}
+
+function moveFocusToPreviousTab(currentTab) {
+    var tablist = currentTab.parentElement
+    var tabs = Array.from(tablist.querySelectorAll("[role=tab]"))
+
+    if (currentTab === tabs[0]) {
+        moveFocusToTab(tabs[tabs.length-1]);
+    } else {
+        var indexOfNextTab = tabs.indexOf(currentTab);
+        moveFocusToTab(tabs[indexOfNextTab-1]);
+    }
+  }
+
+function moveFocusToNextTab(currentTab) {
+    var tablist = currentTab.parentElement
+    var tabs = Array.from(tablist.querySelectorAll("[role=tab]"))
+
+    if (currentTab === tabs[tabs.length-1]) {
+      moveFocusToTab(tabs[0]);
+    } else {
+      index = tabs.indexOf(currentTab);
+      moveFocusToTab(tabs[index + 1]);
+    }
+}
+
+function setTabListContent(tablist) {
+    for (tabpanel of tablist.querySelectorAll("[role=tabpanel]")) {
+        tabpanel.innerHTML = Math.random()
+    }
+}
+// -----------END KEYBOARD FOCUS MANAGEMENT-----------
+//===============END MANUAL NAVIGATION
+
+
+
+//-------------------------------------------------------------
+//-----------------Method 2: Automatic Activation-----------------
+//-------------------------------------------------------------
+function onKeydownAuto(activationType, e) {
+    var curr_tab = e.currentTarget
+    // get list of tabs, so we can move to bottom/top tab
+    var tablist = e.currentTarget.parentElement
+    var tabs = Array.from(tablist.querySelectorAll("[role=tab]"))
+    var flag = false;
+    var indexOfTargetTab = tabs.indexOf(curr_tab);
+    switch (e.key) {
+      case "ArrowLeft":
+        indexOfTargetTab--;
+        flag = true;
+        break;
+
+      case "ArrowRight":
+        indexOfTargetTab++;
+        flag = true;
+        break;
+      case "Home":
+        indexOfTargetTab = 0;
+        flag = true;
+        break;
+
+      case "End":
+        indexOfTargetTab = tabs.length-1;
+        flag = true;
+        break;
+
+      default:
+        break;
+    }
+    // if outside of target range, we must set to beginning tab or ending
+    if (indexOfTargetTab === -1) {
+        indexOfTargetTab = tabs.length-1;
+    } else if (indexOfTargetTab === tabs.length) {
+        indexOfTargetTab = 0;
+    }
+
+    // AUTO/MANUAL ACTIVATION
+    if (activationType === "auto") {
+        setSelectedTab(tabs[indexOfTargetTab])
+        
+    } 
+    moveFocusToTab(tabs[indexOfTargetTab])
+
+    if (flag) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+  }
+
+
+
