@@ -58,17 +58,54 @@ function setCurrentDataPoint(hashHex) {
     if (Array.isArray(data_value)) {
         setControlsForRow(container, hashHex)
         return
-    } else {
-        addControlsForPoint2(container, hashHex, getNextRowFromValue)
     }
+    addControlsForPoint(container, dataPt.value, dataPt.left, dataPt.right)
 }
 
+function addControlsForPoint(container, value, leftHex, rightHex) {
+    const row = document.createElement('div');
+    row.className = 'data-row';
+    const left5Arrow = document.createElement('button');
+    left5Arrow.innerHTML = '←←←←←';
+    left5Arrow.onclick = function () {
+        setCurrentDataPoint(getDataPt(getDataPt(getDataPt(getDataPt(leftHex).left).left).left).left)
+    }
+    row.appendChild(left5Arrow);
+    const leftArrow = document.createElement('button');
+    leftArrow.innerHTML = '←';
+    leftArrow.onclick = function () {
+        setCurrentDataPoint(leftHex)
+    }
+    row.appendChild(leftArrow);
+
+    const dataValue = document.createElement('span');
+    dataValue.innerHTML = value;
+    dataValue.style = "width:500px;"
+    row.appendChild(dataValue);
+
+    const lockButton = document.createElement('button');
+    lockButton.innerHTML = '🔓';
+    row.appendChild(lockButton);
+
+    const rightArrow = document.createElement('button');
+    rightArrow.innerHTML = '→';
+    rightArrow.onclick = function () {
+        setCurrentDataPoint(rightHex)
+    }
+    row.appendChild(rightArrow);
+    const right5Arrow = document.createElement('button');
+    right5Arrow.innerHTML = '→→→→→→';
+    right5Arrow.onclick = function () {
+        setCurrentDataPoint(getDataPt(getDataPt(getDataPt(getDataPt(rightHex).right).right).right).right)
+    }
+    row.appendChild(right5Arrow);
+    container.appendChild(row);
+}
 function setControlsForRow(container, hashHex) {
     var dataPt = getDataPt(hashHex)
-    //addControlsForPoint(container, getDataPt(dataPt.value[0]), dataPt.left, dataPt.right)
-    addControlsForPoint2(container, hashHex, getNextRowFromValue)
-    for (valueHex of dataPt.value) {
-        addControlsForPoint2(container, valueHex, getNextRowFromValue)
+    addControlsForPoint(container, getDataPt(dataPt.value[0]), dataPt.left, dataPt.right)
+    for (dimensionHex of dataPt.value) {
+        addControlsForPoint2(container, dimensionHex, getNextRowFromValue)
     }
 }
 
@@ -133,69 +170,66 @@ function getNextRowFromValue(currHex, isRight) {
     // This variable is used to ensure that we are in the correct dimension
     // blockchain-wise, this would just pull the parentHex
     var dataPt = getDataPt(currHex)
-    // Used to determine if the current element a value under the overarching data point or if it's the data point itself
-    var valueDimension = getDimensionHex(currHex)
-    var curr_pointDimension = getDimensionHex(curr_nav_hex)
+    direction_move = getDimensionHex(currHex)
     //console.log(locked_DIMS);
-    var nextHex = curr_nav_hex;
+    var nextHex;
     direction = isRight ? 'right' : 'left'
     // Case 1: Ensure that we are not traversing a LOCKED dimension
     if (locked_DIMS.indexOf(currHex) != -1) {
         console.log("ERROR: DIMENSION IS LOCKED!!!");
-    // Case 2: we are traversing on the dimension of the currently selected data point
-    } else if (valueDimension == curr_pointDimension) {
-        // TODO TODOTODOTODOTODOTODOTODOTODOTODO
-        // IF WE DO NOT HAVE THIS LINE AND LOCK a value dim, then traverse on this dim
-        if (locked_DIMS.length != 0)
-            console.log("ERROR: cannot parse while there are locked");
-        else
-            nextHex = dataPt[direction];
-    // Case 3: if there are no Locks in place, we can traverse by going to left/right of value dimension and getting first possible reference
-    } else if (locked_DIMS.length == 0) {
-        var isNextRow = false
-        var nextUniqueInDimension = getDataPt(dataPt[direction])
-        while (!isNextRow) {
-            for (ref of nextUniqueInDimension.refs) {
-                if (getDimensionHex(ref) == curr_pointDimension) {
-                    isNextRow = true;
-                    nextHex = ref;
-                    break;
-                }
-            }
-            nextUniqueInDimension = getDataPt(nextUniqueInDimension[direction])
-        }
-     // Case 4: Use locks to determine next value
+        nextHex = curr_nav_hex
     } else {
-        // valid_hexes keeps track of the combination of the locked dimension values
-        var valid_hexes = getDataPt(locked_DIMS[0]).refs
-        // INNER JOIN ON EACH locked dimension's references
-        for (let dimdex = 1; dimdex < locked_DIMS.length; dimdex++) {
-            var curr_dim_valid = getDataPt(locked_DIMS[dimdex]).refs
-            // perform inner join on valid_hexes and current dimension's value list
-            var inner_join = [];
-            for (curr_value_hex of curr_dim_valid) {
-                if (valid_hexes.includes(curr_value_hex))
-                    inner_join.push(curr_value_hex);
-            }
-            valid_hexes = inner_join;
-        }
-        console.log('Number of valid ' + curr_pointDimension + ' using the locked dimensions is ' +  valid_hexes.length);
-        // we MUST find a user within our valid hexes
-        var isNextRow = false
-        var nextUniqueInDimension = getDataPt(dataPt[direction])
-        while (!isNextRow) {
-            for (ref of nextUniqueInDimension.refs) {
-                if (getDimensionHex(ref) == curr_pointDimension && valid_hexes.includes(ref)) {
-                    isNextRow = true;
-                    nextHex = ref;
-                    break;
+        // Case 2: we are traversing on the dimension of the currently selected data point
+        if (getDimensionHex(currHex) == getDimensionHex(curr_nav_hex)) {
+            nextHex = dataPt[direction];
+        } else {
+            // Case 3: if there are no Locks in place, we can traverse by going to left/right of value dimension and getting first possible reference
+            // dataPt is a sub-element of currHex, since it's not in the same dimension
+            if (locked_DIMS.length == 0) {
+                var isNextRow = false
+                var nextUniqueInDimension = getDataPt(dataPt[direction])
+                while (!isNextRow) {
+                    for (ref of nextUniqueInDimension.refs) {
+                        if (getDimensionHex(ref) == getDimensionHex(curr_nav_hex)) {
+                            isNextRow = true;
+                            nextHex = ref;
+                            break;
+                        }
+                    }
+                    nextUniqueInDimension = getDataPt(nextUniqueInDimension[direction])
+                }
+                // Case 4: Use locks to determine next value
+            } else {
+                // valid_hexes keeps track of the combination of the locked dimension values
+                var valid_hexes = getDataPt(locked_DIMS[0]).refs
+                // INNER JOIN ON EACH locked dimension's references
+                for (let dimdex = 1; dimdex < locked_DIMS.length; dimdex++) {
+                    var curr_dim_valid = getDataPt(locked_DIMS[dimdex]).refs
+                    // perform inner join on valid_hexes and current dimension's value list
+                    var inner_join = [];
+                    for (curr_value_hex of curr_dim_valid) {
+                        if (valid_hexes.includes(curr_value_hex))
+                            inner_join.push(curr_value_hex);
+                    }
+                    valid_hexes = inner_join;
+                }
+                console.log('Number of valid ' + getDimensionHex(curr_nav_hex) + ' using the locked dimensions is ' +  valid_hexes.length);
+                // we MUST find a user within our valid hexes
+                var isNextRow = false
+                var nextUniqueInDimension = getDataPt(dataPt[direction])
+                while (!isNextRow) {
+                    for (ref of nextUniqueInDimension.refs) {
+                        if (getDimensionHex(ref) == getDimensionHex(curr_nav_hex) && valid_hexes.includes(ref)) {
+                            isNextRow = true;
+                            nextHex = ref;
+                            break;
+                        }
+                    }
+                    nextUniqueInDimension = getDataPt(nextUniqueInDimension[direction])
                 }
             }
-            nextUniqueInDimension = getDataPt(nextUniqueInDimension[direction])
         }
     }
-    
-    
     curr_nav_hex = nextHex;
     return nextHex
 }
