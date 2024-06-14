@@ -41,6 +41,7 @@ function addDimensionSelector(container, dimensionIds) {
 
 function setCurrentDataPoint(hashHex) {
     const container = document.getElementById('dataContainer');
+    // RESET VARIABLES
     container.innerHTML = ''
 
     dataPt = getDataPt(hashHex)
@@ -53,9 +54,7 @@ function setCurrentDataPoint(hashHex) {
     data_value = dataPt.value
     // This is an array, meaning it is a row of dimension value references
     if (Array.isArray(data_value)) {
-        setControlsForRow(container, dataPt)
-        // console.log(data_value);
-        // console.log("Not supported yet");
+        setControlsForRow(container, hashHex)
         return
     }
     addControlsForPoint(container, dataPt.value, dataPt.left, dataPt.right)
@@ -100,11 +99,78 @@ function addControlsForPoint(container, value, leftHex, rightHex) {
     row.appendChild(right5Arrow);
     container.appendChild(row);
 }
+function setControlsForRow(container, hashHex) {
+    var dataPt = getDataPt(hashHex)
+    addControlsForPoint(container, getDataPt(dataPt.value[0]), dataPt.left, dataPt.right)
+    for (dimensionHex of dataPt.value) {
+        addControlsForPoint2(container, dimensionHex, getNextRowFromValue)
+    }
+}
+function getNextNorm(dataPt, isRight) {
+    if (isRight) 
+        return dataPt.right
+    else
+        return dataPt.left
+}
 
-function setControlsForRow(container, dataPt) {
-    // console.log(dataPt);
-    
-    addControlsForPoint(container, getDataPt(dataPt.value[0]).value, dataPt.left, dataPt.right)
+function getNextRowFromValue(dataPt, isRight, currHex) {
+    // This variable is used to ensure that we are in the correct dimension
+    // blockchain-wise, this would just pull the parentHex
+    curr_dimension = getDimensionHex(currHex)
+    locked_DIMS;
+    if (locked_DIMS.indexOf(currHex) != -1) {
+        console.log("ERROR: DIMENSION IS LOCKE");
+        
+    }
+    if (isRight) 
+        return dataPt.right
+    else
+        return dataPt.left
+}
+function addControlsForPoint2(container, currHex, getNext) {
+    dataPt = getDataPt(currHex)
+    var value = dataPt.value
+    const row = document.createElement('div');
+    row.className = 'data-row';
+    const leftArrow = document.createElement('button');
+    leftArrow.innerHTML = '←';
+    leftArrow.onclick = function () {
+        setCurrentDataPoint(getNext(dataPt, true, currHex))
+    }
+    row.appendChild(leftArrow);
+
+    const dataValue = document.createElement('span');
+    dataValue.innerHTML = value;
+    dataValue.style = "width:500px;"
+    row.appendChild(dataValue);
+
+    const lockButton = document.createElement('button');
+    lockButton.innerHTML = '🔓';
+    lockButton.onclick = function () {
+        if (lockButton.innerHTML == '🔓') {
+            lockButton.innerHTML = '🔒'
+            locked_DIMS.push(currHex)
+        } else {
+            lockButton.innerHTML = '🔓'
+            indexOfLockedDim = locked_DIMS.indexOf(currHex)
+            locked_DIMS.splice(indexOfLockedDim, 1)
+        }
+        console.log(locked_DIMS);
+        
+    }
+    row.appendChild(lockButton);
+
+    const rightArrow = document.createElement('button');
+    rightArrow.innerHTML = '→';
+    rightArrow.onclick = function () {
+        setCurrentDataPoint(getNext(dataPt, true, currHex))
+    }
+    row.appendChild(rightArrow);
+    container.appendChild(row);
+}
+function getDimensionHex(currHex) {
+    var dimensionHex =  currHex.match(/[a-zA-Z]+/g);
+    return dimensionHex[0]
 }
 /**
  * Populates the current data point with its information
@@ -112,6 +178,7 @@ function setControlsForRow(container, dataPt) {
  * @param {*} data 
  */
 function setupStartingDataPoint(event) {
+    locked_DIMS = []
     curr_dimension = event.target.value
     initialDimHex = getInitPostWithinDimension(curr_dimension)
     setCurrentDataPoint(initialDimHex)
@@ -135,6 +202,8 @@ async function main() {
     //console.log('testt');
 
 }
+const row_dimension = "users_dim"
+var locked_DIMS = []
 main()
 
 
