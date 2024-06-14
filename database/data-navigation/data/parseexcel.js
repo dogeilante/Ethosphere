@@ -29,7 +29,6 @@ async function main() {
     } catch (err) {
         console.error('Error writing to the file:', err);
     }
-    //printDimension(row_name + "0")
 }
 
 

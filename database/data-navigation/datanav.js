@@ -36,6 +36,9 @@ function addDimensionSelector(container, dimensionIds) {
     container.appendChild(dimSelectLbl)
     container.appendChild(dimSelect)
 }
+
+
+
 function setCurrentDataPoint(hashHex) {
     const container = document.getElementById('dataContainer');
     container.innerHTML = ''
@@ -50,54 +53,58 @@ function setCurrentDataPoint(hashHex) {
     data_value = dataPt.value
     // This is an array, meaning it is a row of dimension value references
     if (Array.isArray(data_value)) {
-        console.log(data_value);
-        console.log("Not supported yet");
+        setControlsForRow(container, dataPt)
+        // console.log(data_value);
+        // console.log("Not supported yet");
         return
     }
-    addControlsForPoint(container, dataPt)
+    addControlsForPoint(container, dataPt.value, dataPt.left, dataPt.right)
 }
-function addControlsForPoint(container, dataPt) {
+
+function addControlsForPoint(container, value, leftHex, rightHex) {
     const row = document.createElement('div');
     row.className = 'data-row';
     const left5Arrow = document.createElement('button');
     left5Arrow.innerHTML = '←←←←←';
     left5Arrow.onclick = function () {
-        setCurrentDataPoint(getDataPt(getDataPt(getDataPt(getDataPt(dataPt.left).left).left).left).left)
+        setCurrentDataPoint(getDataPt(getDataPt(getDataPt(getDataPt(leftHex).left).left).left).left)
     }
     row.appendChild(left5Arrow);
     const leftArrow = document.createElement('button');
     leftArrow.innerHTML = '←';
     leftArrow.onclick = function () {
-        setCurrentDataPoint(dataPt.left)
+        setCurrentDataPoint(leftHex)
     }
     row.appendChild(leftArrow);
 
     const dataValue = document.createElement('span');
-    dataValue.innerHTML = data_value;
+    dataValue.innerHTML = value;
     dataValue.style = "width:500px;"
     row.appendChild(dataValue);
 
     const lockButton = document.createElement('button');
     lockButton.innerHTML = '🔓';
-    // lockButton.onclick = function () {
-    //     item.locked = !item.locked;
-    //     lockButton.innerHTML = item.locked ? '🔒' : '🔓';
-    // };
     row.appendChild(lockButton);
 
     const rightArrow = document.createElement('button');
     rightArrow.innerHTML = '→';
     rightArrow.onclick = function () {
-        setCurrentDataPoint(dataPt.right)
+        setCurrentDataPoint(rightHex)
     }
     row.appendChild(rightArrow);
     const right5Arrow = document.createElement('button');
     right5Arrow.innerHTML = '→→→→→→';
     right5Arrow.onclick = function () {
-        setCurrentDataPoint(getDataPt(getDataPt(getDataPt(getDataPt(dataPt.right).right).right).right).right)
+        setCurrentDataPoint(getDataPt(getDataPt(getDataPt(getDataPt(rightHex).right).right).right).right)
     }
     row.appendChild(right5Arrow);
     container.appendChild(row);
+}
+
+function setControlsForRow(container, dataPt) {
+    // console.log(dataPt);
+    
+    addControlsForPoint(container, getDataPt(dataPt.value[0]).value, dataPt.left, dataPt.right)
 }
 /**
  * Populates the current data point with its information
@@ -110,7 +117,6 @@ function setupStartingDataPoint(event) {
     setCurrentDataPoint(initialDimHex)
 }
 async function getJson(data_to_read) {
-    path = "data\\"
     const data = await fetch("./data/" + data_to_read + ".json");
     return data.json()
 }
