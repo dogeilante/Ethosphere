@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>oneFileDeSo v2</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+    <meta name="author" content="SoftwareAlaCarte.com" />
+    <meta
+      name="description"
+      content="freeware - an open source php Framework for DeSo Blockchain"
+    />
+    <meta
+      name="description"
+      content="ask @DiamondThumb on DeSo.com blockchain"
+    />
+    <link
+      rel="icon"
+      href="BC1YLiTb69BmUxxamKUtE2V6hsY5pBy4CUzQnzmQx14dGJRL1fYvi4y.png"
+      type="image/x-icon"
+    />
+    <script type="text/javascript" src="/pW_8ffu3lij2soWv"></script>
+    <script type="text/javascript" src="/frR2wrUZiolbQK3s"></script>
+  </head>
+  <body>
+    <style>
+      #identity {
+        display: block;
+        visibility: hidden;
+      }
+
+      body {
+        background-color: #f5f5f5;
+        font-family: "Times New Roman", Times, serif;
+      }
+    </style>
+
+    <iframe
+      id="identity"
+      frameborder="0"
+      src="https://identity.deso.org/embed"
+      style="
+        height: 100vh;
+        width: 100vw;
+        display: block;
+        position: fixed;
+        z-index: 1000;
+        left: 400;
+        top: 400;
+      "
+    >
+    </iframe>
+    <div id="header"
+        style="
+        position: fixed;
+        top: 0px;
+        height:50px;
+        ">
+      <button id="loadoverlay" onclick="loadOverlay()">Proposal Creator</button>
+    </div>
+    <div
+      id="overlay-proposal-creator"
+      style="
+        position: fixed;
+        top: 50px;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: white;
+        z-index: 1000;
+        overflow: auto;
+        display: none;
+      "
+    ></div>
+
+    <div id="forScripts2"></div>
+    <div id="forScripts"></div>
+    <div id="forSlider"></div>
+    <div id="forFFF"></div>
+    <div id="fullscreen"><br /><br /><b></b></div>
+    <div id="forFollowed"></div>
+
+
+    <script>
+      var isOverLoaded = false;
+      function loadOverlay() {
+        var overlay = document.getElementById("overlay-proposal-creator");
+        var header = document.getElementById("header");
+        
+        // ADD Exit button for
+        const overlayBtn = document.getElementById("loadoverlay");
+        if (!isOverLoaded) {
+          fetch("../proposal-creator/proposal.html")
+            .then((response) => response.text())
+            .then((html) => {
+              // add fetched html
+              overlay.innerHTML = html;
+              const script = document.createElement("script");
+              script.src = "../proposal-creator/proposal.js";
+              document.head.appendChild(script);
+            })
+            .catch((error) => console.error("Error loading overlay:", error));
+        }
+        if (overlay.style.display == "none") {
+          isOverLoaded = true;
+          overlay.style.display = "";
+          overlayBtn.textContent = 'Proposal List'
+        } else {
+          overlay.style.display = "none";
+          overlayBtn.textContent = 'Proposal Creator'
+        }
+      }
+      function onSuccessLog(thisType, data) {
+        console.log(thisType);
+        console.log(data);
+      }
+
+
+
+
+      function getProfiles(options, onSuccess, onError) {
+        const {
+          PublicKeyBase58Check,
+          Username,
+          UsernamePrefix,
+          Description,
+          OrderBy,
+          NumToFetch,
+          ReaderPublicKeyBase58Check,
+          ModerationType,
+          FetchUsersThatHODL,
+          AddGlobalFeedBool
+        } = options;
+
+        const requestData = {
+          thisType: sMeType[tMeCurrentStream][tMeCurrentStage],
+          url: "node.deso.org/api/v0/get-profiles",
+          data: {
+            PublicKeyBase58Check: PublicKeyBase58Check,
+            Username: Username,
+            UsernamePrefix: UsernamePrefix,
+            Description: Description,
+            OrderBy: OrderBy,
+            NumToFetch: NumToFetch,
+            ReaderPublicKeyBase58Check: ReaderPublicKeyBase58Check,
+            ModerationType: ModerationType,
+            FetchUsersThatHODL: FetchUsersThatHODL,
+            AddGlobalFeedBool: AddGlobalFeedBool,
+          },
+        };
+
+        doNow(requestData, onSuccess, onError);
+      }
+      /**===========END DOGE SHIT CODE=======================
+       * 
+       * 
+       */
+
+      function handleMessage(event) {
+        const { data } = event;
+        const { id, service, method } = data;
+
+        if (service !== "identity") {
+          return;
+        }
+
+        if (method) {
+          handleRequest(event); // after login
+        } else {
+          handleResponse(event); // getPost makePOst
+        }
+      }
+
+      function handleRequest(event) {
+        const { data } = event;
+        const { id, method, payload } = data;
+        const { publicKeyAdded } = payload;
+
+        if (method == "initialize") {
+          handleInitialize(event);
+        } else if (method == "storageGranted") {
+          handleStorageGranted();
+        } else if (method == "login") {
+          handleLogin(event);
+
+          getKK(
+            "a37521107309882f390e515779bf7ab395c108a416a9f84d3603becd90f86431",
+            publicKeyAdded,
+            0
+          );
+        } else if (method == "info") {
+          handleInfo(id, publicKeyAdded);
+        } else {
+          console.error("DiamondThumb says no valid Identity");
+          console.error(event);
+        }
+
+        return;
+      }
+
+      function handleInitialize(event) {
+        const { data } = event;
+        const { service, method, id, payload } = data;
+        const { publicKeyAdded } = payload;
+
+        event.source.postMessage(
+          {
+            id: id,
+            service: "identity",
+            payload: {},
+          },
+          "https://identity.deso.org"
+        );
+
+        return;
+      }
+
+      let myPublicKey = "";
+
+      function handleStorageGranted() {
+        return;
+      }
+
+      function handleLogin(event) {
+        const { data } = event;
+        const { service, method, id, payload } = data;
+        const { users, publicKeyAdded } = payload;
+
+        login.close();
+        myPublicKey = publicKeyAdded;
+
+        IdentityUsersKey = users;
+        localStorage.setItem(IdentityUsersKey, JSON.stringify(users));
+        const users2 = JSON.parse(localStorage.getItem(IdentityUsersKey));
+
+        return;
+      }
+
+      function handleInfo(id, publicKeyAdded) {
+        event.source.postMessage(
+          {
+            id,
+          },
+          "https://identity.deso.org"
+        );
+      }
+
+      function doInfo(event) {
+        id = uuid();
+        document.getElementById("identity").contentWindow.postMessage(
+          {
+            id,
+            service: "identity",
+            method: "info",
+          },
+          "https://identity.deso.org"
+        );
+
+        return;
+      }
+
+      function doStorage() {
+        id = uuid();
+
+        document.getElementById("identity").contentWindow.postMessage(
+          {
+            id,
+            service: "identity",
+            method: "storageGranted",
+          },
+          "https://identity.deso.org"
+        );
+
+        return;
+      }
+
+      function uuid() {
+        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+          /[xy]/g,
+          function (c) {
+            var r = (Math.random() * 16) | 0,
+              v = c == "x" ? r : (r & 0x3) | 0x8;
+            return v.toString(16);
+          }
+        );
+      }
+
+      function handleResponse(event) {
+        const { data } = event;
+        const { service, method, payload, id } = data;
+        const {
+          browserSupported,
+          hasCookieAccess,
+          hasLocalStorageAccess,
+          hasStorageAccess,
+          transactionHex,
+          signedTransactionHex,
+        } = payload;
+
+        ids =
+          browserSupported +
+          " - " +
+          hasCookieAccess +
+          " - " +
+          hasLocalStorageAccess +
+          " - " +
+          hasStorageAccess;
+
+        if (signedTransactionHex) {
+          u = "-10060-10060-1-1-9";
+          v = signedTransactionHex; // submit to submit-transaction
+          z = Math.floor(Math.random() * 10000 + 1);
+
+          //E3_ggg(u,v,"","","#notesInner");
+          //document.getElementById("forFFF").innerHTML += "<br>AFTERSIGNED" + signedTransactionHex;
+
+          const requestData = {
+            thisType: "sendTransHex",
+            url: "node.deso.org/api/v0/submit-transaction",
+            data: {
+              TransactionHex: signedTransactionHex,
+            },
+          };
+
+          doNow(requestData, genericSuccess, genericError);
+        }
+
+        //document.getElementById("forFFF").innerHTML += "<br>handledAfterSIGNED" + signedTransactionHex;
+
+        return;
+      }
+
+      function doSigning(transHex) {
+        const users2 = JSON.parse(localStorage.getItem(IdentityUsersKey));
+        const users3 = JSON.stringify(users2);
+
+        for (var key in users2) {
+          //document.getElementById("forFFF").innerHTML += "<br>getKey" + transHex;
+
+          if (key == myPublicKey) {
+            encryptedSeedHex = users2[key]["encryptedSeedHex"];
+            accessLevelHmac = users2[key]["accessLevelHmac"];
+          }
+        }
+
+        id = uuid();
+
+        document.getElementById("identity").contentWindow.postMessage(
+          {
+            id,
+            service: "identity",
+            method: "sign",
+            payload: {
+              accessLevel: 4,
+              accessLevelHmac: accessLevelHmac,
+              encryptedSeedHex: encryptedSeedHex,
+              transactionHex: transHex,
+            },
+          },
+          "https://identity.deso.org"
+        );
+      }
+
+      function goPost(ParentHex, PublicKey, MARQ) {
+        var button = document.getElementById("postMe");
+        var transitionDuration = "0.2s";
+        var transitionTimingFunction = "ease-in-out";
+
+        button.style.transitionProperty = "background-color, color";
+        button.style.transitionDuration = transitionDuration;
+        button.style.transitionTimingFunction = transitionTimingFunction;
+
+        if (button.classList.contains("pushed-in")) {
+          button.style.backgroundColor = "red";
+          button.style.color = "white";
+          button.classList.remove("pushed-in");
+          button.classList.add("pushed-out");
+        } else {
+          button.style.backgroundColor = "green";
+          button.style.color = "white";
+          button.classList.remove("pushed-out");
+          button.classList.add("pushed-in");
+        }
+
+        var cc = document.getElementById("it-" + ParentHex).value;
+        cc = cc.replace(/(?:\r\n|\r|\n)/g, "<br>");
+        cc = cc.replace(/ /g, "[zz]");
+        let dd =
+          "\nvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv\nTYPE\nMEMBERSHIP\n\nTITLE\n" +
+          cc;
+
+        cc = document.getElementById("ta-" + ParentHex).value;
+        cc = cc.replace(/(?:\r\n|\r|\n)/g, "<br>");
+        cc = cc.replace(/ /g, "[zz]");
+        cc =
+          dd +
+          "\n\nDESCRIPTION\n" +
+          cc +
+          "\nvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv\n";
+
+        let u = "-10061-10061-1-1-9";
+        let v = ParentHex;
+        let w = PublicKey;
+        let x = cc;
+
+        E3_ggg(u, v, w, x, "#ca-" + ParentHex);
+
+        return;
+      }
+
+      function getName(PublicKey) {
+        var cc = "";
+
+        let u = "-10073-10073-1-1-9";
+        let v = PublicKey;
+        let w = cc;
+        let x = cc;
+
+        E3_ggg(u, v, w, x, "#notesInner");
+
+        return;
+      }
+
+      function sendDeso(PublicKey) {
+        var cc = "";
+
+        let u = "-10072-10072-1-1-9";
+        let v = PublicKey;
+        let w = cc;
+        let x = cc;
+
+        //E3_ggg(u,v,w,x,"#notesInner");
+
+        const requestData = {
+          thisType: "sendDeso",
+          url: "node.deso.org/api/v0/send-deso",
+          data: {
+            SenderPublicKeyBase58Check: PublicKey,
+            RecipientPublicKeyOrUsername:
+              "BC1YLiMGYzDWEo73gJpqFZ32txELPQti7w13ccm9GTMyePHWtPNfxES",
+            Amount: 2124,
+            NanosMinFeeRateNanosPerKB: 1000,
+          },
+        };
+
+        doNow(requestData, transSuccess, genericError);
+
+        //doSigning(transHex);
+
+        return;
+      }
+
+      function goPostThis(ParentHex, PublicKey, MARQ) {
+        var cc = document.getElementById("displayText").innerText;
+
+        cc = cc.replace(/(?:\r\n|\r|\n)/g, "\n");
+        cc = cc.replace(/ /g, "[zz]");
+
+        let u = "-10061-10061-1-1-9";
+        let v = ParentHex;
+        let w = PublicKey;
+        let x = cc;
+
+        E3_ggg(u, v, w, x, "#ca-" + ParentHex);
+
+        return;
+      }
+
+      function goFollow(PosterKey, PublicKey, MARQ) {
+        let u = "-10064-10064-1-1-9";
+        let v = PosterKey;
+        let w = PublicKey;
+        let x = MARQ;
+
+        E3_ggg(u, v, w, x, ".c4-" + PosterKey);
+
+        const collection = document.getElementsByClassName("c2-" + PosterKey);
+
+        for (let i = 0; i < collection.length; i++) {
+          if (i == 0) {
+            fCount = collection[i].innerHTML;
+            fCount = parseInt(fCount);
+            fCount = fCount + 1;
+          }
+          collection[i].innerHTML = fCount;
+        }
+
+        return;
+      }
+
+      function getComments(PostHashHex, CommentLimit, PublicKey) {
+        if (dtrig[PostHashHex] != "0") {
+          u = "-10068-10068-1-1-9";
+          let v = PostHashHex;
+          let w = CommentLimit;
+          let x = PublicKey;
+          dtrig[PostHashHex] = "0";
+          E3_ggg(u, v, w, x, "#comments-" + PostHashHex);
+        }
+
+        return;
+      }
+
+      function goUnFollow(PosterKey, PublicKey, MARQ) {
+        let u = "-10065-10065-1-1-9";
+        let v = PosterKey;
+        let w = PublicKey;
+        let x = MARQ;
+
+        E3_ggg(u, v, w, x, ".c4-" + PosterKey);
+
+        const collection = document.getElementsByClassName("c2-" + PosterKey);
+        for (let i = 0; i < collection.length; i++) {
+          if (i == 0) {
+            fCount = collection[i].innerHTML;
+            fCount = parseInt(fCount);
+            fCount = fCount - 1;
+            collection[i].innerHTML = fCount;
+          }
+        }
+
+        return;
+      }
+
+      function getKK(hex, PublicKey, hexCount) {
+        let u = "-10071-10071-1-1-9";
+        let v = hex;
+        let w = PublicKey;
+        let x = hexCount;
+
+        //E3_ggg(u,v,w,x,"#message-" + hexCount);
+
+        //document.getElementById("fullscreen").innerHTML = PublicKey;
+
+        sendDeso(PublicKey);
+
+        dataLoop(); // first call to dataLoop !!
+
+        return;
+      }
+
+      function getII(hex, PublicKey, hexCount) {
+        document.getElementById("message-" + hexCount).innerHTML = "";
+
+        return;
+      }
+
+      function displayHex() {}
+
+      function doDiv(hexCount) {
+        var g;
+        var container_block;
+        g = document.createElement("div");
+        g.setAttribute("id", "message-" + hexCount);
+        g.innerHTML = "";
+        container_block = document.getElementById("allMessages");
+        container_block.appendChild(g);
+      }
+
+      function didDiv(ParentStakeID, postHashHexN) {
+        const oldComm = document.getElementById("thisComment-" + ParentStakeID);
+        const newComm = document.getElementById("thisComment-" + postHashHexN);
+        oldComm.insertAdjacentElement("afterend", newComm);
+      }
+
+      const h = 1000;
+      const w = 800;
+      const y = window.outerHeight / 2 + window.screenY - h / 2;
+      const x = window.outerWidth / 2 + window.screenX - w / 2;
+      const login = window.open(
+        "https://identity.deso.org/log-in?accessLevelRequest=4&GlobalDESOLimit=10000000",
+        null,
+        `toolbar=no, width=w, height=h, top=y, left=x`
+      );
+
+      window.addEventListener("message", (event) => this.handleMessage(event));
+    </script>
+
+    <script>
+      const currentUrl = window.location.href;
+      const params = new URLSearchParams(window.location.search);
+
+      let walletID = "";
+      walletID = params.get("walletID");
+      if (!walletID) {
+        walletID = "BC1YLiJUUwY9Q5cbT1XCSVTp53piLWM3o1uCWvU8wAvG1wUVvNbupij";
+      }
+
+      let postID = "";
+      postID = params.get("postID");
+      if (!postID) {
+        postID =
+          "a37521107309882f390e515779bf7ab395c108a416a9f84d3603becd90f86431"; // slider
+      }
+
+      publicKey = walletID;
+
+      //document.getElementById('forFollowed').innerHTML = walletID + " has these followers: ";
+
+      // ...............................const initialHex = publicKey;
+      //..............................getBB(initialHex); // get username for now; will be the actual block for entire program in The Library (framework(this file), supportHex, initialHex)
+
+      // nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
+
+      let tMeCountStream = 1;
+      let tMeCurrentStream = 1;
+      let tMeCurrentStage = 1;
+      let tMeLoopCount = 1;
+      let tMeNoPriorities = "no";
+
+      let sMeType = [];
+      let sMePriority = [];
+      let sMeNext = [];
+      let sMeFinalState = [];
+      let sMeCount = [];
+
+      let post = [];
+
+      getDataThisGizmo();
+
+      // nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
+
+      // mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+      function onSave(thisType, data) {
+        let postHex;
+        let postBody;
+        let postCommentCount;
+        let postComments;
+
+        if (thisType === "singlePost" || thisType === "singleComment") {
+          console.log("saveOMG.." + data.PostFound.Body + "..." + thisType);
+
+          postHex = data.PostFound.PostHashHex;
+          postBody = data.PostFound.Body;
+          postCommentCount = data.PostFound.CommentCount;
+          //postComments = data.PostFound.Comments;
+          postCommentHex =
+            data.PostFound.Comments && data.PostFound.Comments.length > 0
+              ? data.PostFound.Comments[0].PostHashHex
+              : "No comments"; // Safely access the first comment's body
+          postCommentBody =
+            data.PostFound.Comments && data.PostFound.Comments.length > 0
+              ? data.PostFound.Comments[0].Body
+              : "No comment body";
+
+          posterPublicKey =
+            data.PostFound.PosterPublicKeyBase58Check || "No public key";
+
+          // ..................check for dupes
+
+          if (!post[postHex]) {
+            post[postHex] = [];
+          }
+          post[postHex][3] = postBody;
+          post[postHex][4] = postCommentCount;
+          post[postHex][5] = postCommentHex;
+
+          post[postCommentHex] = [];
+          post[postCommentHex][3] = postCommentBody;
+          post[postCommentHex][30] = posterPublicKey;
+
+          if (postHex) {
+            console.log(
+              postCommentCount +
+                "|" +
+                postComments +
+                "|" +
+                postHex +
+                " onSave: newPriority-" +
+                sMePriority[tMeCurrentStream][tMeCurrentStage]
+            );
+          } else {
+            console.log("No postHex found for thisType:", thisType);
+          }
+        }
+
+        return;
+      }
+
+      function onSave10(thisType, data) {
+        console.log("OMG.." + data.PostFound.Body);
+
+        if (thisType == "singlePost") {
+          const postHex = data.PostFound.PostHashHex;
+          const postBody = data.PostFound.Body;
+
+          // ..................check for dupes
+
+          if (!post[postHex]) {
+            post[postHex] = [];
+          }
+          post[postHex][1] = postBody;
+        }
+
+        console.log(
+          postHex +
+            " onSaved: newPrioity-" +
+            sMePriority[tMeCurrentStream][tMeCurrentStage]
+        );
+
+        return;
+      }
+
+      function doNow(requestData, onSuccess, onError) {
+        // Program is halted until response.
+        const { thisType, url, data } = requestData;
+        let url2 = "https://" + url;
+
+        let response = fetch(url2, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        })
+          .then((response) => response.json()) // Parse response body as JSON
+          .then((data) => {
+            onSave(thisType, data); // Save new data
+            return data;
+          })
+          .then((data) => {
+            onSuccess(thisType, data); // Call onSuccess callback to updateGizmoData(thisType)
+          })
+          .catch((error) => {
+            onError(error);
+            console.error("Error in doNow: ", error);
+          });
+
+        // Code here is processed before response (doNow)
+        console.log("Request sent, waiting for response...");
+      }
+
+      function doNowT(requestData, onSuccess, onError) {
+        // Program is halted until response.
+
+        //const { url, data } = requestData;
+        const { thisType, url, data } = requestData;
+
+        // const { method, headers, url2, data: requestData } = options;
+        let url2 = "https://" + url;
+
+        let response = fetch(url2, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        })
+          //.then(response => {
+          //let data = response.json();
+          //data = onSuccess(data);
+          //onSuccess(thisStream, data);
+
+          //return data;
+          //})
+
+          .then((response) => {
+            return data;
+            data = response.json(); // Parse response body as JSON
+            return data;
+          })
+          .then((data) => {
+            onSave(thisType, data); // save new data
+            return data;
+          })
+          .then((data) => {
+            onSuccess(thisType, data); // Call onSuccess callback with thisStream and parsed data
+          })
+          .catch((error) => {
+            onError(error);
+
+            console.error("Error in doNow: ", error);
+          });
+
+        //........................ code here is processed before response (doNow)
+      }
+
+      function genericSuccess(thisStream, data) {
+        console.log("Data received: ", data);
+        // return data;
+      }
+
+      function transSuccess(thisStream, data) {
+        console.log("Data received: ", data);
+
+        //const { data } = event;
+        //const { service, method, payload, id} = data;
+        const { TransactionHex } = data;
+
+        if (TransactionHex) {
+          //document.getElementById("forFFF").innerHTML += "<br>getTransHex" + TransactionHex;
+
+          doSigning(TransactionHex);
+        }
+
+        //document.getElementById("forFFF").innerHTML += "<br>sentToBeSigned" + TransactionHex;
+
+        return;
+
+        // return data;
+      }
+
+      function genericError(error) {
+        console.error("Error fetching: ", error);
+      }
+
+      async function doLater(requestData, onSuccess, onError) {
+        // Program is interupted upon response.
+
+        const { thisStream, url, data } = requestData;
+
+        let url2 = "https://" + url;
+        let response = await fetch(url2, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+
+        try {
+          const data = await response.json();
+          onSuccess(thisStream, data);
+        } catch (error) {
+          onError(error);
+          console.error("Error in doLater: ", error);
+        }
+
+        //........................................ code here is processed after response (doLater)
+      }
+
+      // mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+      function BC_88(postHex) {
+        console.log("OMG.." + postHex);
+        // ..................check for dupes
+        const myData = "";
+        const j = post[postHex][3].split("var j = '")[1].split("'")[0];
+        let originalString = j;
+        let searchString = "[FF-HEX]";
+        let replacementString = "forSlider";
+        let jjj = originalString.replace(searchString, replacementString);
+
+        console.log(
+          postHex +
+            " responded: newPrioity-" +
+            sMePriority[tMeCurrentStream][tMeCurrentStage]
+        );
+
+        eval(jjj);
+      }
+
+      function BC_90XX(postHex) {
+        let comT = post[postHex][5];
+        let j = post[comT][3].split("\n").slice(3, 4).join("\n");
+
+        console.log(postHex + " responded: newPrioity-" + comT);
+
+        document.getElementById("forFollowed22").innerHTML += "<br>" + j;
+      }
+
+      function BC_89(postHex) {
+        // return data;
+
+        // ..................check for dupes
+
+        //const functionName = `BC_${postHex}`;
+        const myData = "";
+
+        //const j = post[postHex][1].split('\n')[0];
+        let j = post[postHex][3].split("\n").slice(0, 1).join("\n");
+
+        let originalString = j;
+        let searchString = "[FF-HEX]";
+        let replacementString = "forSlider";
+        j = originalString.replace(searchString, replacementString);
+
+        console.log(
+          postHex +
+            " responded: newPrioity-" +
+            sMePriority[tMeCurrentStream][tMeCurrentStage]
+        );
+
+        // streamMe[streamMe["currentStream"]][2]["singlePostNext"] = "db32842f4ba71df9b19ca78098f407f0674a8f767db3cdb8aeec7cdd54e2ab16";
+
+        //forFollowed
+
+        //eval(jjj);
+
+        // innerHTML
+
+        document.getElementById("forFollowed2").innerHTML += "<br>" + j;
+      }
+
+
+      function getPost(options, onSuccess, onError) {
+        const {
+          PostHashHex,
+          FetchParents,
+          CommentOffset,
+          CommentLimit,
+          ReaderPublicKeyBase58Check,
+          AddGlobalFeedBool,
+        } = options;
+
+        const requestData = {
+          thisType: sMeType[tMeCurrentStream][tMeCurrentStage],
+          url: "node.deso.org/api/v0/get-single-post",
+          data: {
+            PostHashHex: PostHashHex,
+            FetchParents: FetchParents,
+            CommentOffset: CommentOffset,
+            CommentLimit: CommentLimit,
+            ReaderPublicKeyBase58Check: ReaderPublicKeyBase58Check,
+            AddGlobalFeedBool: AddGlobalFeedBool,
+          },
+        };
+
+        doNow(requestData, onSuccess, onError);
+      }
+
+      // mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+      // ????????????????????????????????????????????????????????????????????????????
+
+      // nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
+
+      // nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
+
+      function dataLoop() {
+        if (!sMePriority[tMeCurrentStream][tMeCurrentStage] >= 1) {
+          tMeCurrentStage++;
+
+          if (
+            typeof sMeType[tMeCurrentStream][tMeCurrentStage] == "undefined"
+          ) {
+            tMeCurrentStage = 1;
+            tMeCurrentStream++;
+
+            if (
+              typeof sMeType[tMeCurrentStream][tMeCurrentStage] == "undefined"
+            ) {
+              tMeNoPriorities = "yes";
+            }
+          }
+        }
+
+        console.log(
+          " LOOP " +
+            tMeLoopCount +
+            " (" +
+            tMeCurrentStream +
+            "-" +
+            tMeCurrentStage +
+            ") ==> Priority:" +
+            sMePriority[tMeCurrentStream][tMeCurrentStage] +
+            " - " +
+            " => " +
+            sMeFinalState[tMeCurrentStream][tMeCurrentStage]
+        );
+
+        tMeLoopCount++;
+
+        if (
+          (sMeFinalState[tMeCurrentStream][tMeCurrentStage] == "on" &&
+            tMeNoPriorities == "yes") ||
+          sMePriority[tMeCurrentStream][tMeCurrentStage] >= 1
+        ) {
+          doThis = "yes";
+        }
+
+        if (doThis == "yes") {
+          if (sMeType[tMeCurrentStream][tMeCurrentStage] == "singlePost") {
+            console.log(
+              " jerky (" + tMeCurrentStream + " - " + tMeCurrentStage + ")"
+            );
+            console.log(
+              " gerky " +
+                sMePriority[tMeCurrentStream][tMeCurrentStage] +
+                " : (" +
+                tMeCurrentStream +
+                " - " +
+                tMeCurrentStage +
+                ")"
+            );
+
+            let options = {
+              PostHashHex: sMeNext[tMeCurrentStream][tMeCurrentStage],
+              FetchParents: false,
+              CommentOffset: 0,
+              CommentLimit: 1,
+              ReaderPublicKeyBase58Check: null,
+              AddGlobalFeedBool: false,
+            };
+
+            getPost(options, updateGizmoData, genericError);
+          }
+
+          if (sMeType[tMeCurrentStream][tMeCurrentStage] == "singleComment") {
+            console.log(
+              " jerky (" + tMeCurrentStream + " - " + tMeCurrentStage + ")"
+            );
+            console.log(
+              " gerky " +
+                sMePriority[tMeCurrentStream][tMeCurrentStage] +
+                " : (" +
+                tMeCurrentStream +
+                " - " +
+                tMeCurrentStage +
+                ")"
+            );
+
+            let options = {
+              PostHashHex: sMeNext[tMeCurrentStream][tMeCurrentStage],
+              FetchParents: false,
+              CommentOffset: sMeCount[tMeCurrentStream][tMeCurrentStage],
+              CommentLimit: 1,
+              ReaderPublicKeyBase58Check: null,
+              AddGlobalFeedBool: false,
+            };
+
+            getPost(options, updateGizmoData, genericError);
+
+            sMeCount[tMeCurrentStream][tMeCurrentStage] += 1;
+          }
+        }
+
+        if (sMeFinalState[tMeCurrentStream][tMeCurrentStage] == "on") {
+          // getNextRecord
+          if (nextKey == "") {
+            //...........................................getInitialFollowsStateless(currentKey,nextKey);
+            // place data in Array in above function
+          } else {
+            // .......................................getNextFollowsStateless(currentKey,nextKey);
+            // place data in Array in above function
+          }
+
+          // ...........................updateLoop("postLastFollower",nextKey);
+        }
+
+        sMePriority[tMeCurrentStream][tMeCurrentStage] -= 1;
+      }
+
+      // ABOVE is template for DeSo-specific Library
+      // nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
+      // BELOW is template for each gizmo
+
+      function setMe(
+        streamID,
+        stageID,
+        targetStream,
+        priorityFor,
+        finalState,
+        catalyst
+      ) {
+        if (!sMeType[streamID]) sMeType[streamID] = [];
+        if (!sMePriority[streamID]) sMePriority[streamID] = [];
+        if (!sMeNext[streamID]) sMeNext[streamID] = [];
+        if (!sMeFinalState[streamID]) sMeFinalState[streamID] = [];
+        if (!sMeCount[streamID]) sMeCount[streamID] = [];
+
+        sMeType[streamID][stageID] = targetStream;
+        sMePriority[streamID][stageID] = priorityFor;
+        sMeNext[streamID][stageID] = catalyst;
+        sMeFinalState[streamID][stageID] = finalState;
+        sMeCount[streamID][stageID] = 0;
+      }
+
+      function updateGizmoData(thisType) {
+        if (thisType == "singlePost") {
+          if (
+            (tMeCurrentStream == 1 && tMeCurrentStage == 1) ||
+            tMeNoPriorities == "yes"
+          ) {
+            BC_88(
+              "82832113093d39ea0f5674030af6e6140e0829226baad8b17538ccc78ff2d6b1"
+            );
+          }
+
+          if (
+            (tMeCurrentStream == 2 && tMeCurrentStage == 1) ||
+            tMeNoPriorities == "yes"
+          ) {
+            //BC_88("db32842f4ba71df9b19ca78098f407f0674a8f767db3cdb8aeec7cdd54e2ab16");
+            BC_91();
+          }
+
+          if (
+            (tMeCurrentStream == 3 && tMeCurrentStage == 1) ||
+            tMeNoPriorities == "yes"
+          ) {
+            BC_89(postID);
+          }
+        }
+
+        if (thisType == "singleComment") {
+          if (
+            (tMeCurrentStream == 4 && tMeCurrentStage == 1) ||
+            tMeNoPriorities == "yes"
+          ) {
+            BC_90(postID);
+            //BC_90(postCommentHex);
+          }
+        }
+
+        dataLoop(); // continue the stream
+      }
+
+      function getDataThisGizmo() {
+        // setMe(streamID,stageID,targetStream,priorityFor,finalState,catalyst)
+        setMe(
+          1,
+          1,
+          "singlePost",
+          1,
+          "off",
+          "82832113093d39ea0f5674030af6e6140e0829226baad8b17538ccc78ff2d6b1"
+        ); // supportFile
+        setMe(
+          2,
+          1,
+          "singlePost",
+          1,
+          "off",
+          "db32842f4ba71df9b19ca78098f407f0674a8f767db3cdb8aeec7cdd54e2ab16"
+        ); // initialFile
+
+        setMe(3, 1, "singlePost", 1, "off", postID); // initialFile
+        setMe(4, 1, "singleComment", 20, "off", postID); // initialFile
+        setMe(4, 2, "singleProfile", 1, "off", postID); // spun after each setMe of same Stream/Stage
+
+        //dataLoop();   // first call to dataLoop !!
+      }
+
+      function updateLoop(what, nextKey) {
+        // all the data updates for dataLoop()
+
+        if (what == "postLastFollower") {
+          // .....................................................BC_123(nextKey);
+        }
+      }
+
+      function BC_91() {
+        var outerContainer = document.createElement("div");
+        outerContainer.id = "outer";
+        outerContainer.style.position = "relative";
+        outerContainer.style.backgroundColor = "#e0e0e0"; // Soft background color
+        outerContainer.style.borderRadius = "10px"; // Rounded corners
+        outerContainer.style.padding = "10px"; // Padding for spacing
+        outerContainer.style.border = "1px solid #ccc";
+        outerContainer.style.boxShadow = "0 0 10px rgba(0, 0, 0, 0.1)";
+        outerContainer.style.width = "1256px";
+        outerContainer.style.margin = "0 auto";
+        outerContainer.style.textAlign = "center";
+
+        var outerContainer2 = document.createElement("div");
+        outerContainer2.id = "forFollowed2";
+        outerContainer2.style.position = "relative";
+        outerContainer2.style.margin = "0 auto";
+        outerContainer2.style.textAlign = "center";
+        outerContainer2.style.height = "100px";
+        outerContainer2.style.fontSize = "34px";
+
+        var forFollowed = document.getElementById("forFollowed");
+        forFollowed.appendChild(outerContainer2);
+
+        forFollowed.appendChild(outerContainer);
+
+        var styleElement = document.createElement("style");
+        styleElement.type = "text/css";
+
+        var cssCode =
+          ".inner { " +
+          "background-color: #d8c6ad; " +
+          "border-radius: 0px; " +
+          "padding: 12px; " +
+          "margin-right: 3px; " +
+          "border: 1px solid #bcaaa4; " +
+          "display: flex; " +
+          "justify-content: center; " +
+          "align-items: center; " +
+          "cursor: pointer; " +
+          "font-size: 14px; " +
+          "color: #3e3e3e; " +
+          "overflow: hidden; " +
+          "white-space: nowrap; " +
+          "text-overflow: ellipsis; " +
+          "user-select: none; " +
+          "z-index: 1; " +
+          "}";
+
+        styleElement.appendChild(document.createTextNode(cssCode));
+        document.head.appendChild(styleElement);
+      }
+
+      function BC_90(key) {
+        let comT = post[key][5];
+        let j4 = post[comT][3].split("\n").slice(3, 4).join("\n");
+        let j7 = post[comT][3].split("\n").slice(6, 7).join("\n");
+        let j10 = post[comT][3].split("\n").slice(9, 10).join("\n");
+
+        let poster = post[comT][30];
+
+        // needs user from profile
+
+        key = postCommentHex;
+
+        // this is the javascript datahandling code for the outer gizmo that contains full list of users followed by the wallet holder.
+        if (key != "" && j7 != "") {
+          var outDiv = document.createElement("div");
+          outDiv.id = "outDiv-" + key;
+          outDiv.style.position = "relative";
+          outDiv.style.display = "flex";
+          outDiv.style.width = "1254px";
+          outDiv.style.margin = "3px";
+
+          var tallyDiv = document.createElement("div");
+          tallyDiv.className = "inner";
+          tallyDiv.id = "tally-" + key;
+          tallyDiv.style.width = "120px";
+          tallyDiv.textContent = j4;
+          tallyDiv.style.position = "relative";
+          tallyDiv.onclick = function () {
+            makeEditable(this);
+          };
+
+          var userDiv = document.createElement("div");
+          userDiv.className = "inner";
+          userDiv.id = "user-" + key;
+          userDiv.style.width = "200px";
+          userDiv.textContent = j7;
+          userDiv.style.position = "relative";
+          userDiv.onclick = function () {
+            makeEditable(this);
+          };
+
+          var keyDiv = document.createElement("div");
+          keyDiv.className = "inner";
+          keyDiv.id = "key-" + key;
+          keyDiv.style.width = "200px";
+          keyDiv.textContent = j10;
+          keyDiv.style.position = "relative";
+          keyDiv.onclick = function () {
+            makeEditable(this);
+          };
+
+          let score = "123";
+          var scoreDiv = document.createElement("div");
+          scoreDiv.className = "inner";
+          scoreDiv.id = "score-" + key;
+          scoreDiv.style.width = "200px";
+          scoreDiv.textContent = "pending";
+          scoreDiv.style.position = "relative";
+          scoreDiv.onclick = function () {
+            makeEditable(this);
+          };
+
+          var divStyle = "width:128px;";
+          var divStyle2 = "width:208px;";
+          var divStyle3 = "width:300px;";
+          var divStyle4 = "width:530px;";
+          var divStyle5 = "width:208px;";
+
+          tallyDiv.setAttribute("style", divStyle);
+          userDiv.setAttribute("style", divStyle3);
+          keyDiv.setAttribute("style", divStyle4);
+          scoreDiv.setAttribute("style", divStyle5);
+
+          var theOuter = document.getElementById("outer");
+          theOuter.appendChild(outDiv);
+
+          outDiv.appendChild(tallyDiv);
+          outDiv.appendChild(userDiv);
+          outDiv.appendChild(keyDiv);
+          outDiv.appendChild(scoreDiv);
+
+          document
+            .getElementById("tally-" + key)
+            .addEventListener("click", showOverlay);
+          document
+            .getElementById("user-" + key)
+            .addEventListener("click", showOverlay);
+          document
+            .getElementById("key-" + key)
+            .addEventListener("click", showOverlay);
+          document
+            .getElementById("score-" + key)
+            .addEventListener("click", showOverlay);
+        }
+
+        function makeEditable(div) {
+          div.contentEditable = true;
+          div.classList.add("editable");
+          div.style.zIndex = "1002";
+          div.focus();
+        }
+
+        function hideOverlay() {
+          const overlay = document.getElementById("overlay");
+          const inputBoxes = document.querySelectorAll(".inner");
+          const buttons = document.querySelectorAll(".button");
+
+          // Hide the overlay and buttons
+          overlay.style.display = "none";
+          buttons.forEach((button) => {
+            button.style.display = "none";
+          });
+
+          // Reset all input boxes z-index to 1
+          inputBoxes.forEach((box) => {
+            box.style.zIndex = 1;
+          });
+        }
+
+        function showOverlay() {
+          const overlay = document.getElementById("overlay");
+          overlay.style.display = "block";
+          document
+            .getElementById("overlay")
+            .addEventListener("click", hideOverlay);
+        }
+
+        function createOverlayAndButton() {
+          var style = document.createElement("style");
+          style.type = "text/css";
+          style.innerHTML = `
+        #overlay {
+            position: fixed;
+            top: 50px;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(168, 149, 122, 0.9);
+
+        display: none;
+            z-index: 1000;
+        }
+        .button {
+            position: absolute;
+            width: 60px;
+            height: 30px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            z-index: 1001;
+            top: 0;
+            left: 0;
+            display: none;
+        }
+        .button:hover {
+            background-color: #e0e0e0;
+            transform: translateY(2px);
+        }
+        .button:active {
+            transform: translateY(4px);
+        }
+    `;
+          document.head.appendChild(style);
+
+          var placeInHere = document.createElement("div");
+          placeInHere.id = "placeinhere";
+
+          var overlay = document.createElement("div");
+          overlay.id = "overlay";
+          overlay.setAttribute("onclick", "hideOverlay()");
+
+          placeInHere.appendChild(overlay);
+          document.body.appendChild(placeInHere);
+        }
+
+        createOverlayAndButton();
+      }
+    </script>
+  </body>
+</html>

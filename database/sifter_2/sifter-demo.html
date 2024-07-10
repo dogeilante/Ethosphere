@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Proposal Creator</title>
+    <script src="./sifter-demo.js">
+    </script>
+    <style>
+      .container {
+        display:flex;
+        justify-content: center;
+      }
+
+      h1 {
+        font-family: "Georgia", serif;
+        text-align: center;
+        color: #8b4513; /* Sienna */
+        font-size: 28px;
+        margin-bottom: 30px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: bold;
+      }
+
+      select,
+      textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #8b4513; /* Sienna */
+        background-color: #faf6e9; /* Very light parchment */
+        color: #2c1a0e;
+        font-family: "Courier New", monospace;
+      }
+
+      textarea {
+        height: 150px;
+        resize: vertical;
+      }
+
+      button:hover {
+        background-color: #a0522d; /* Sienna, slightly lighter */
+      }
+    </style>
+    <style>
+      body {
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f0f0f0;
+        font-family: Arial, sans-serif;
+      }
+
+      textarea#scrollTextarea {
+        height: 10px;
+        align-self: center;
+        width: 63.5%;
+        border: none;
+        border-left: 4px solid #2d2626;
+        border-right: 4px solid #2d2626;
+        padding: 10px;
+        box-sizing: border-box;
+        font-size: 16px;
+        background-color: #ffefcb;
+        resize: vertical;
+
+        transition: height 3s ease;
+      }
+      textarea#scrollTextarea:focus {
+        outline: none;
+        border-left: 3px solid black;
+        border-right: 3px solid black;
+      }
+    </style>
+    <style>
+      .card {
+        background-color: #f7f1e1; /* Slightly lighter parchment for contrast */
+        border: 2px solid #8b4513; /* Sienna border */
+        padding: 15px;
+        margin: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: calc(11.11111% - 10px); /* Subtracting margins */
+        box-sizing: border-box;
+      }
+      .card:hover {
+        border-color:#2c1a0e
+      }
+      .card-title {
+        font-size: 18px;
+        text-align: center;
+        color: #8b4513; /* Sienna */
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      .card-content {
+        font-family: "Courier New", monospace;
+        text-align: justify;
+        line-height: 1.4;
+        font-size: 14px;
+      }
+      .card-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .curr_datapt {
+        background-color: #f7f1e1; /* Slightly lighter parchment for contrast */
+        border: 2px solid #8b4513; /* Sienna border */
+        padding: 15px;
+        margin: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        align-items: center;
+        width: 80%; /* Subtracting margins */
+        box-sizing: border-box;
+      }
+      .dim_nav {
+        display: flex;
+        margin-bottom: 5px;
+        border: 1px solid gray;
+        padding: 5px;
+        margin: 0;
+      }
+      p {
+        padding: 0;
+        margin: 0;
+      }
+      .arrow {
+        width: 0;
+        height: 0;
+        border-left: 20px solid transparent;
+        border-right: 20px solid transparent;
+        border-top: 30px solid #8b4513;
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>The Sifter</h1>
+    <div class="container">
+    <div class="curr_datapt">
+      <h3>Datapoint to add:</h3>
+      <div class="dim_nav">
+        <div style="width: 15%"></div>
+        <span style="width: 70%; text-align: center">Red: 0</span>
+        <div style="width: 15%; display: flex">
+          <img src="./xbox.png" style="max-width: 50%" />
+        </div>
+      </div>
+      <div class="dim_nav">
+        <div style="width: 15%"></div>
+        <span style="width: 70%; text-align: center">Green: 0</span>
+        <div style="width: 15%">
+          <img src="./xbox.png" style="max-width: 50%" />
+        </div>
+      </div>
+      <div class="dim_nav">
+        <div style="width: 15%"></div>
+        <span style="width: 70%; text-align: center">Blue: 0</span>
+        <div style="width: 15%">
+          <img src="./xbox.png" style="max-width: 50%" />
+        </div>
+      </div>
+    </div>
+    </div>
+    <div style="text-align: center;">
+        You are here
+    </div>
+    <div style="display: flex;justify-content: center;">
+
+        <div class="arrow"></div>
+    </div>
+    <div class="card-container">
+      <div class="card"></div>
+      <div class="card"></div>
+      <div class="card"></div>
+
+      <div class="card"></div>
+
+      
+      <div class="card"></div>
+      <div class="card"></div>
+      <div class="card"></div>
+      <div class="card"></div>
+      <div class="card"></div>
+    </div>
+  </body>
+</html>
