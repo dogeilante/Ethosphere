@@ -3,7 +3,6 @@
  * Things that need to be changed: 
  *      separation between 
  */
-const { log } = require('console');
 const fs = require('fs').promises
 const LEFT_DIRECTION = -1;
 var dimension_ids_global = []
@@ -16,7 +15,7 @@ var row_name = "users_dim"
 main()
 // });
 async function main() {
-    data_to_read = "mlb_players"
+    data_to_read = "colors"
     await readCSVAndConvert(data_to_read);
     //console.log(data);
     //console.log(posts);
@@ -51,14 +50,14 @@ function convertCSVToData(csvString) {
     // create header dimensions
     addDimensions(dimensionIds)
     // populate values of each dimension
-    populateDimensions(dimensionIds, dimensionData)
+    populate_1D_Dimensions(dimensionIds, dimensionData)
     // row dimensions are different in that they reference other dimensions
     addDimension(row_name)
     dimension_ids_global = dimensionIds;
     populateRowDimension(row_name, dimensionIds, dimensionData)
 }
 
-function populateDimensions(dimensionIds, datatable) {
+function populate_1D_Dimensions(dimensionIds, datatable) {
     // we need to check if we're creating a new dimension, or if they already exist
     // dimensionIds = dimensionIsExist()
     for (let row = 0; row < datatable.length; row++) {
@@ -265,8 +264,23 @@ function compareStrings(str1, str2) {
         return -1
     }
 }
+
 function compareAlphabetical(str1, str2) {
+    // we're adding in integer comparison lol
+    if (parseInt(str1) != NaN) {
+        str1 = parseInt(str1)
+        str2 = parseInt(str2)
+        if (str1 == str2)
+            return 0
+        else if (str1 > str2)
+            return 1;
+        else 
+            return -1
+    }
+    
+    
     return str1.localeCompare(str2)
+    
 }
 
 

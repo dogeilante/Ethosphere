@@ -1,0 +1,352 @@
+<div>
+  <head>
+    <style>
+      .container {
+        background-color: #f7f1e1; /* Slightly lighter parchment for contrast */
+        border: 2px solid #8b4513; /* Sienna border */
+        padding: 30px;
+        width: 100%; /*default wdth for mobile devices*/
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      /* For tablets and small desktops */
+      @media screen and (min-width: 768px) {
+        .container {
+          width: 80%;
+          margin: 0 auto;
+        }
+      }
+
+      /* For larger desktops */
+      @media screen and (min-width: 1100px) {
+        .container {
+          width: 50%;
+        }
+      }
+
+      h1 {
+        font-family: "Georgia", serif;
+        text-align: center;
+        color: #8b4513; /* Sienna */
+        font-size: 28px;
+        margin-bottom: 30px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: bold;
+      }
+
+      select,
+      textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #8b4513; /* Sienna */
+        background-color: #faf6e9; /* Very light parchment */
+        color: #2c1a0e;
+        font-family: "Courier New", monospace;
+      }
+
+      textarea {
+        height: 150px;
+        resize: vertical;
+      }
+
+      button {
+        background-color: #8b4513; /* Sienna */
+        color: #f7f1e1;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        font-family: "Georgia", serif;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      button:hover {
+        background-color: #a0522d; /* Sienna, slightly lighter */
+      }
+
+      .seal {
+        width: 100px;
+        height: 100px;
+        border: 2px solid #8b4513;
+        border-radius: 50%;
+        margin: 20px auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Georgia", serif;
+        font-size: 14px;
+        color: #8b4513;
+
+        text-align: center;
+        line-height: 1.2;
+      }
+    </style>
+    <style>
+      body {
+        font-family: "Courier New", monospace;
+        background-color: #f2e8c4; /* Light parchment color */
+        color: #2c1a0e; /* Dark brown text */
+        height: 100vh;
+        font-family: Arial, sans-serif;
+      }
+
+      textarea#scrollTextarea {
+        height: 10px;
+        align-self: center;
+        width: 63.8%;
+        border: none;
+        border-left: 4px solid #2d2626;
+        border-right: 4px solid #2d2626;
+        padding: 10px;
+        box-sizing: border-box;
+        font-size: 16px;
+        background-color: #ffefcb;
+        resize: vertical;
+
+        transition: height 3s ease;
+      }
+      textarea#scrollTextarea:focus {
+        outline: none;
+        border-left: 3px solid black;
+        border-right: 3px solid black;
+      }
+    </style>
+    <style>
+      /*
+        ============DIALOGS===============
+        
+      */
+      .open-dialog-btn {
+        background-color: #8b4513;
+        color: #f7f1e1;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        font-family: "Georgia", serif;
+      }
+      .dialog-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        display: none;
+      }
+      .dialog-content {
+        background-color: #f7f1e1;
+        padding: 20px;
+        border: 2px solid #8b4513;
+        max-width: 80%;
+        max-height: 80%;
+        overflow-y: auto;
+        position: relative;
+      }
+      .close-dialog-btn {
+        margin-left: auto;
+        margin-right: 0px;
+        margin-top: 30px;
+        margin-bottom: 10px;
+        background-color: #8b4513;
+        color: #f7f1e1;
+        border: none;
+
+        font-family: "Georgia", serif;
+      }
+      .parchment {
+        background-color: #f7e9c3;
+        border: 2px solid #d3b683;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      .parchment p {
+        color: #4a3728;
+        font-size: 18px;
+        padding: 10px;
+        line-height: 1.6;
+        position: relative;
+        z-index: 2;
+      }
+      .signature {
+        text-align: right;
+        font-style: italic;
+        padding: 10px;
+        margin-top: 50px;
+        font-size: 20px;
+        color: #4a3728;
+      }
+
+      .stamp::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(
+          circle,
+          transparent 0%,
+          transparent 70%,
+          #8b4513 100%
+        );
+        opacity: 0.3;
+      }
+    </style>
+  </head>
+
+  <div style="display: flex; justify-content: center">
+    <div class="container">
+      <div style="text-align: center; margin-bottom: 20px; font-size: 24px">
+        ✒️
+      </div>
+      <h1>Proposal Creator</h1>
+      <div>
+        <label for="proposalType">Proposal Type:</label>
+        <select id="proposalType" name="proposalType">
+          <option value="membership">Membership Application</option>
+          <option value="constitution">Constitution Amendment</option>
+          <option value="policy">Policy Change</option>
+          <option value="Tool-Usage">DAO-usage approval</option>
+          <option value="budget">Budget Usage</option>
+          <option value="other">Other</option>
+        </select>
+
+        <div
+          style="
+            width: 100%;
+            display: flex;
+            position: relative;
+            justify-content: center;
+            align-items: center;
+          "
+        >
+          <h2
+            id="proposalType_label"
+            style="
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              z-index: 1;
+              margin: 0;
+              white-space: nowrap;
+            "
+          >
+            Membership Declaration
+          </h2>
+          <img src="./templates/scroll-top.png" style="max-width: 100%" />
+        </div>
+        <div
+          style="
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+          "
+        >
+          <textarea id="scrollTextarea" rows="1"></textarea>
+        </div>
+        <div style="width: 100%; display: flex">
+          <img src="./templates/scroll-bottom.png" style="max-width: 100%" />
+        </div>
+
+        <button class="open-dialog-btn">Submit Proposal</button>
+      </div>
+    </div>
+  </div>
+  <div class="dialog-overlay" id="dialogOverlay">
+    <div class="dialog-content">
+      <h2>Hear ye! Hear ye!</h2>
+      <p>
+        Be prepared, plebian. To provision this proposal, you must
+        <a href="https://thenetworkstate.com/">come hither.</a>
+        Go forth to the next step on a long journey to provisionment of your
+        great ideals! Fun times ahead, my friend.
+      </p>
+      <div class="parchment">
+        <p id="submitted-signed"></p>
+        <div class="signature">Signed, degen_doge</div>
+      </div>
+      <div style="display: flex">
+        <button class="close-dialog-btn" id="closeDialogBtn">Close</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+    const textarea = document.getElementById("scrollTextarea");
+    
+
+    async function expandTextarea() {
+      textarea.style.height = "300px";
+      // await delay(3000);
+      textarea.style.transition = "height 2.2s ease-in";
+      await delay(2500);
+      textarea.style.transition = "height 0s";
+    }
+    async function collapseTextArea() {
+      textarea.style.transition = "height 0.6s ease-in";
+      // await delay(1000);
+      textarea.style.height = "0px";
+      await delay(600);
+    }
+
+    window.addEventListener("load", expandTextarea);
+
+    async function updateInputs() {
+      const proposalInput = document.getElementById("proposalType");
+      const declarationLabel = document.getElementById("proposalType_label");
+      await collapseTextArea();
+      declarationLabel.innerHTML =
+        proposalInput.options[proposalInput.selectedIndex].text;
+
+      await expandTextarea();
+    }
+
+    async function loadTemplate(templateName) {
+      const response = await fetch(`templates/${templateName}.html`);
+      return await response.text();
+    }
+    // Add event listener to the select element
+    document
+      .getElementById("proposalType")
+      .addEventListener("change", updateInputs);
+
+    updateInputs();
+
+    //=======================Add event listeners for dialog=================
+    const openDialogBtn = document.querySelector(".open-dialog-btn");
+    const dialogOverlay = document.getElementById("dialogOverlay");
+    const closeDialogBtn = document.getElementById("closeDialogBtn");
+    const submittedProposal = document.getElementById("submitted-signed");
+    openDialogBtn.addEventListener("click", () => {
+      submittedProposal.innerHTML = textarea.value;
+      dialogOverlay.style.display = "flex";
+    });
+
+    closeDialogBtn.addEventListener("click", () => {
+      dialogOverlay.style.display = "none";
+    });
+
+    dialogOverlay.addEventListener("click", (e) => {
+      if (e.target === dialogOverlay) {
+        dialogOverlay.style.display = "none";
+      }
+    });
+  </script>
+</div>
