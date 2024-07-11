@@ -116,15 +116,15 @@ async function getProfileListAPI(userPrefix) {
         FetchUsersThatHODL:    false /*FetchUsersThatHODL*/,
         AddGlobalFeedBoo:    false /*AddGlobalFeedBool*/
     }
-    let listOfProfiles = [];
-    await getProfiles(profileAPIsrch, (thisType, result) => {
-        //console.log(thisType);
-        //console.log(result);
-        result.ProfilesFound.slice(0, 5).forEach((user) => {
-            listOfProfiles.push(user);
+    return new Promise((resolve, reject) => {
+        getProfiles(profileAPIsrch, (thisType, result) => {
+            const listOfProfiles = result.ProfilesFound.slice(0, 5);
+            menuList = listOfProfiles;
+            resolve(listOfProfiles);
+        }, (error) => {
+            reject(error);
         });
-        menuList = listOfProfiles;
-    }, genericError)
+    });
 
     
 }
