@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Color Sifter</title>
+  </head>
+  <body>
+    <div class="top-content">
+      <div id="node-data" class="flex-box">
+        <h1>Node Data</h1>
+        <p>Click on a node below to view its data.</p>
+      </div>
+      <div id="current-node-data" class="flex-box">
+        <h1>Current Node Data</h1>
+        <ul id="data-list"></ul>
+      </div>
+      <div id="history-data" class="flex-box">
+        <h1>History</h1>
+        <div id="history-items"></div>
+      </div>
+    </div>
+    <div class="bottom-content">
+      <div class="navigation-arrows">
+        <span class="arrow" id="left-arrow">←</span>
+        <span class="arrow" id="right-arrow">→</span>
+      </div>
+      <div class="nodes-container" id="nodes-container">
+        <div id="box0" class="node-box neighbor-box"></div>
+        <div id="box1" class="node-box neighbor-box"></div>
+        <div id="box2" class="node-box neighbor-box"></div>
+        <div id="box3" class="node-box neighbor-box"></div>
+        <div id="box4" class="node-box current-node"></div>
+        <div id="box5" class="node-box neighbor-box"></div>
+        <div id="box6" class="node-box neighbor-box"></div>
+        <div id="box7" class="node-box neighbor-box"></div>
+        <div id="box8" class="node-box neighbor-box"></div>
+      </div>
+      <div style="width: 100%; display: inline-block; text-align: center;">
+        <h3 style="margin-bottom: 0px;">Guiding Value</h3>
+        <p id="guidingVal" style="margin: 5px;">NaN</p>
+      </div>
+      
+      <div class="trackpad-container">
+        <div class="trackpad">
+          <div class="vertical-bar"></div>
+          <div class="middle-bar"></div>
+          <div class="highlight-region"></div>
+          <div id="pause-overlay" class="pause-overlay">
+            <img src="images/pause.png" style="max-width: 80%; max-height: 80%;">
+            <p>Please select a different direction</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <!--<script src="ui.js"></script>-->
+  <script src="graphStep16.js"></script>
+  <script src="sifter.js"></script>
+
+  <!--didn't want to deal with js weird dependency stuff, but I probably should later :(-->
+</html>
